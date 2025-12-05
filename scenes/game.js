@@ -33,8 +33,8 @@ class GameScene extends Phaser.Scene {
         this.highScore = parseInt(localStorage.getItem("highScore") || 0);
 
         // Player
-        this.player = this.physics.add.image(width/2, height - 150, "pig1");
-        this.player.setScale(0.5);
+        this.player = this.physics.add.image(width/2, height - 200, "pig1");
+        this.player.setScale(0.6);
         this.player.body.allowGravity = false;
         this.player.setBodySize(this.player.width * 0.6, this.player.height * 0.6);
         this.player.setOffset(this.player.width * 0.2, this.player.height * 0.2);
@@ -87,7 +87,7 @@ class GameScene extends Phaser.Scene {
             { font:"30px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
         ).setDepth(1000);
 
-        this.objectiveTxt = this.add.text(10, 130, "S/. " + this.objective,
+        this.objectiveTxt = this.add.text(10, 130, "S/. " + this.formatNumber(this.objective),
             { font:"30px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
         ).setDepth(1000);
 
@@ -226,13 +226,14 @@ class GameScene extends Phaser.Scene {
         if(r < 0.25) type="bill50";
         else if(r < 0.55) type="bill100";
         else if(r < 0.75) type="bill200";
-        else if(r < 0.88) type="vipcard";
-        else if(r < 0.94) type="diamond";
-        else if(r < 0.97) type="heart";
+        else if(r < 0.85) type="vipcard";
+        else if(r < 0.92) type="diamond";
+        else if(r < 0.95) type="heart";
         else type="hammer";
-
+        
         this.spawnItem(type);
     }
+
 
     // SPAWNS META 5
     spawnWorld5(){
@@ -242,15 +243,31 @@ class GameScene extends Phaser.Scene {
         let r = Math.random();
         let type;
 
-        if(r < 0.20) type="bill100";
-        else if(r < 0.45) type="bill200";
-        else if(r < 0.70) type="vipcard";
-        else if(r < 0.88) type="diamond";
-        else if(r < 0.93) type="heart";
-        else type="hammer";
+        // Dificultad extrema cuando supere 60,000
+        if (this.score >= 60000) {
+
+            if(r < 0.10) type="bill100";
+            else if(r < 0.20) type="bill200";
+            else if(r < 0.45) type="vipcard";
+            else if(r < 0.55) type="diamond";
+            else if(r < 0.75) type="hammer";  // 25% MARTILLOS
+            else type="heart";
+
+        } else {
+
+            // Dificultad normal meta 5
+            if(r < 0.20) type="bill100";
+            else if(r < 0.40) type="bill200";
+            else if(r < 0.60) type="vipcard";
+            else if(r < 0.80) type="diamond";
+            else if(r < 0.88) type="heart";
+            else type="hammer"; // 12% martillos
+
+        }
 
         this.spawnItem(type);
     }
+
 
     // CREACIÓN BASE DE ITEMS
     spawnItem(type){
@@ -280,8 +297,8 @@ class GameScene extends Phaser.Scene {
             vipcard: 0.24,
             diamond: 0.23,
 
-            heart: 0.15,
-            hammer: 0.23
+            heart: 0.16,
+            hammer: 0.24
         };
 
 
@@ -290,15 +307,16 @@ class GameScene extends Phaser.Scene {
     }
 
     // VELOCIDAD POR META
-    getWorldSpeeds(){
-        return {
-            1: { min:250, max:350 },
-            2: { min:300, max:450 },
-            3: { min:350, max:520 },
-            4: { min:400, max:580 },
-            5: { min:450, max:650 }
-        }[this.world];
-    }
+        getWorldSpeeds(){
+            return {
+                1: { min:250, max:350 },
+                2: { min:300, max:450 },
+                3: { min:350, max:520 },
+                4: { min:450, max:700 },
+                5: { min:500, max:850 }
+            }[this.world];
+        }
+
 
     // VALORES DE OBJETOS
     getValue(type){
@@ -318,7 +336,7 @@ class GameScene extends Phaser.Scene {
 
         if(value > 0){
             this.score += value;
-            this.scoreTxt.setText("S/. " + this.score.toLocaleString());
+            this.scoreTxt.setText("S/. " + this.formatNumber(this.score));
             this.checkWorldProgress();
         }
 
@@ -348,11 +366,12 @@ class GameScene extends Phaser.Scene {
     checkWorldProgress(){
         let s = this.score;
 
-        if(s >= 200 && this.world === 1) this.changeWorld(2, 1000);
-        else if(s >= 1000 && this.world === 2) this.changeWorld(3, 5000);
-        else if(s >= 5000 && this.world === 3) this.changeWorld(4, 10000);
-        else if(s >= 10000 && this.world === 4) this.changeWorld(5, "∞");
+        if(s >= 200 && this.world === 1) this.changeWorld(2, 2000);
+        else if(s >= 2000 && this.world === 2) this.changeWorld(3, 10000);
+        else if(s >= 10000 && this.world === 3) this.changeWorld(4, 40000);
+        else if(s >= 40000 && this.world === 4) this.changeWorld(5, "∞");
     }
+
 
     // CAMBIO DE META
     changeWorld(newWorld,newObjective){
@@ -372,8 +391,7 @@ class GameScene extends Phaser.Scene {
         this.worldMessage("¡Meta " + newWorld + "!");
 
         this.metaTxt.setText("Meta " + newWorld + ": " + this.metaNames[newWorld]);
-        this.objectiveTxt.setText("S/. " + this.objective);
-
+        this.objectiveTxt.setText("S/. " + (this.objective === "∞" ? "∞" : this.formatNumber(this.objective)));
         this.startSpawnForWorld(newWorld);
         this.updatePigAppearance(newWorld);
     }
@@ -494,7 +512,7 @@ gameOver(){
     ).setOrigin(0.5).setDepth(9002);
 
     this.add.text(width/2, height/2 + 30,
-        "S/. " + this.score.toLocaleString(),
+        "S/. " + this.formatNumber(this.score),
         { font:"42px Arial", fill:"#00e676", stroke:"#003300", strokeThickness:4 }
     ).setOrigin(0.5).setDepth(9002);
 
@@ -504,7 +522,7 @@ gameOver(){
     ).setOrigin(0.5).setDepth(9002);
 
     this.add.text(width/2, height/2 + 115,
-        "S/. " + this.highScore.toLocaleString(),
+        "S/. " + this.formatNumber(this.highScore),
         { font:"28px Arial", fill:"#fff", stroke:"#000", strokeThickness:4 }
     ).setOrigin(0.5).setDepth(9002);
 
@@ -608,7 +626,7 @@ gameOver(){
         this.player.destroy();
 
         this.player = this.physics.add.image(x, y, "pig" + meta);
-        this.player.setScale(0.5);
+        this.player.setScale(0.6);
         this.player.body.allowGravity = false;
 
         this.player.setBodySize(this.player.width * 0.6, this.player.height * 0.6);
@@ -618,4 +636,9 @@ gameOver(){
 
         this.physics.add.overlap(this.player, this.objects, this.catchObject, null, this);
     }
-}
+        formatNumber(num){
+        if (num === "∞") return num;
+        return num.toLocaleString("de-DE");
+    }
+    }
+
