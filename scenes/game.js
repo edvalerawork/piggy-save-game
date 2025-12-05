@@ -21,7 +21,7 @@ class GameScene extends Phaser.Scene {
     // CREACIÓN DE ESCENA
     create() {
         const { width, height } = this.sys.game.config;
-
+        
         // Fondo
         this.bg = this.add.image(width/2, height/2, "bg1");
         this.bg.setDisplaySize(width, height).setDepth(-2000);
@@ -33,8 +33,8 @@ class GameScene extends Phaser.Scene {
         this.highScore = parseInt(localStorage.getItem("highScore") || 0);
 
         // Player
-        this.player = this.physics.add.image(width/2, height - 100, "pig1");
-        this.player.setScale(0.4);
+        this.player = this.physics.add.image(width/2, height - 150, "pig1");
+        this.player.setScale(0.5);
         this.player.body.allowGravity = false;
         this.player.setBodySize(this.player.width * 0.6, this.player.height * 0.6);
         this.player.setOffset(this.player.width * 0.2, this.player.height * 0.2);
@@ -76,44 +76,77 @@ class GameScene extends Phaser.Scene {
     // INTERFAZ GRÁFICA (UI)
     createUI(width, height) {
 
-        this.uiBar = this.add.rectangle(width/2, 53, width, 35, 0x000000, 0.35).setDepth(1000);
+        this.uiBar = this.add.rectangle(width/2, 65, width, 45, 0x000000, 0.35).setDepth(1000);
 
-        this.metaTxt = this.add.text(width/2, 55,
+        this.metaTxt = this.add.text(width/2, 65,
             "Meta 1: " + this.metaNames[1],
-            { font:"22px Arial", fill:"#ffffff", stroke:"#000", strokeThickness:2, resolution: 2 }
+            { font:"35px Arial", fill:"#ffffff", stroke:"#000", strokeThickness:2, resolution: 2 }
         ).setOrigin(0.5).setDepth(1000);
 
-        this.objectiveTxtLabel = this.add.text(10, 75, "Objetivo:",
-            { font:"17px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
+        this.objectiveTxtLabel = this.add.text(10, 95, "Objetivo:",
+            { font:"30px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
         ).setDepth(1000);
 
-        this.objectiveTxt = this.add.text(10, 95, "S/. " + this.objective,
-            { font:"17px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
+        this.objectiveTxt = this.add.text(10, 130, "S/. " + this.objective,
+            { font:"30px Arial", fill:"#ff7b00ff", stroke:"#fff", strokeThickness:3 }
         ).setDepth(1000);
 
-        this.scoreTitle = this.add.text(10, 116, "Ahorro:",
-            { font:"20px Arial", fill:"#fff", stroke:"#1d4d73", strokeThickness:4 }
+        this.scoreTitle = this.add.text(10, 165, "Ahorro:",
+            { font:"35px Arial", fill:"#fff", stroke:"#1d4d73", strokeThickness:4 }
         ).setDepth(1000);
 
-        this.scoreTxt = this.add.text(10, 138, "S/. 0",
-            { font:"28px Arial", fill:"#fff", stroke:"#1d4d73", strokeThickness:4 }
+        this.scoreTxt = this.add.text(10, 210, "S/. 0",
+            { font:"42px Arial", fill:"#fff", stroke:"#1d4d73", strokeThickness:4 }
         ).setDepth(1000);
 
-        this.heartsTxt = this.add.text(width - 10, 75, "❤❤❤",
-            { font:"30px Arial", fill:"#ff3366" }
+        this.heartsTxt = this.add.text(width - 10, 95, "❤❤❤",
+            { font:"46px Arial", fill:"#ff335fff" }
         ).setOrigin(1,0).setDepth(1000);
 
         this.uiBarTop = this.add.rectangle(width/2, 20, width, 40, 0x000000, 1).setDepth(1000);
 
-        this.add.text(20,20, "Menú", { font:"20px Arial", fill:"#fff" })
-            .setOrigin(0,0.5)
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown",()=> this.scene.start("MenuScene"))
-            .setDepth(1001);
+        // Botón MENÚ
+    this.add.text(20, 20, "Menú", { font: "20px Arial", fill: "#fff" })
+        .setOrigin(0, 0.5)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.scene.start("MenuScene"))
+        .setDepth(1001);
 
-        this.add.text(width/2,20,"← → Mover | ESPACIO Pausa",
-            { font:"16px Arial", fill:"#fff" }
-        ).setOrigin(0.5).setDepth(1001);
+    // --- BOTÓN REINICIAR ↺ ---
+    this.restartBtn = this.add.text(width - 90, 20, "↺", {
+        font: "30px Arial",
+        fill: "#fff"
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .setDepth(1001);
+
+    this.restartBtn.on("pointerdown", () => {
+        if (!this.isGameOver) {
+            this.world = 1;
+            this.objective = 200;
+            this.score = 0;
+            this.lives = 3;
+            this.paused = false;
+            this.objects.clear(true, true);
+            this.scene.restart();
+        }
+    });
+
+    this.pauseBtn = this.add.text(width - 25, 20, "⏸", {
+        font: "32px Arial",
+        fill: "#fff"
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .setDepth(1001);
+
+    this.pauseBtn.on("pointerdown", () => {
+        if (!this.isGameOver) {
+            this.togglePause();
+        }
+    });
+
     }
 
     // SPAWNS META 1
@@ -224,7 +257,7 @@ class GameScene extends Phaser.Scene {
         const { width } = this.sys.game.config;
         const speeds = this.getWorldSpeeds();
 
-        const x = Phaser.Math.Between(80, width - 80);
+        const x = Phaser.Math.Between(60, width - 60);
         const obj = this.objects.create(x, -20, type);
 
         obj.setData("type", type);
@@ -233,12 +266,25 @@ class GameScene extends Phaser.Scene {
         obj.body.setAllowGravity(false);
 
         const scales = {
-            coin1: 0.12, coin2: 0.12, coin5: 0.13,
-            bill10: 0.18, bill20: 0.18, bill50: 0.19,
-            bill100: 0.20, bill200: 0.20,
-            vipcard: 0.20, diamond: 0.20,
-            heart: 0.10, hammer: 0.18
+            coin1: 0.19,
+            coin2: 0.19,
+            coin5: 0.20,
+
+            bill10: 0.25,
+            bill20: 0.25,
+            bill50: 0.26,
+
+            bill100: 0.25,
+            bill200: 0.25,
+
+            vipcard: 0.24,
+            diamond: 0.23,
+
+            heart: 0.15,
+            hammer: 0.23
         };
+
+
 
         obj.setScale(scales[type] || 0.13).setDepth(1);
     }
@@ -370,19 +416,26 @@ class GameScene extends Phaser.Scene {
     }
 
     // PAUSA DEL JUEGO
-    togglePause(){
-        if(this.isGameOver) return;
+    togglePause() {
+        if (this.isGameOver) return;
 
         this.paused = !this.paused;
 
-        if(this.paused){
+        if (this.paused) {
+
+            if (this.pauseBtn) this.pauseBtn.setText("⯈");
+
             this.physics.pause();
-            this.spawnTimer.paused = true;
+            if (this.spawnTimer) this.spawnTimer.paused = true;
             this.showPausePanel();
+
         } else {
+
+            if (this.pauseBtn) this.pauseBtn.setText("⏸");
+
             this.hidePausePanel();
             this.physics.resume();
-            this.spawnTimer.paused = false;
+            if (this.spawnTimer) this.spawnTimer.paused = false;
         }
     }
 
@@ -469,7 +522,7 @@ gameOver(){
 
         this.objects.clear(true, true);
         this.isGameOver = false;
-
+        this.paused = false;
         this.scene.restart();
     });
 
@@ -501,15 +554,15 @@ gameOver(){
 
                     this.missedItems++;
 
-                    if(this.missedItems >= 5){
+                    if(this.missedItems >= 4){
 
                         this.lives--;
                         this.updateLives();
 
                         let warn = this.add.text(
-                            this.player.x, this.player.y - 60,
+                            this.player.x, this.player.y - 80,
                             "-1 ❤",
-                            { font:"28px Arial", fill:"#f00", stroke:"#000", strokeThickness:4 }
+                            { font:"60px Arial", fill:"#f00", stroke:"#ffffffff", strokeThickness:7 }
                         ).setOrigin(0.5).setDepth(2000);
 
                         this.tweens.add({
@@ -542,7 +595,9 @@ gameOver(){
             this.player.x += this.speed * 0.015;
         }
 
-        this.player.x = Phaser.Math.Clamp(this.player.x, 40, width - 40);
+        const half = this.player.width * this.player.scaleX * 0.30;
+        this.player.x = Phaser.Math.Clamp(this.player.x, half, width - half);
+
     }
 
     // CAMBIO DE SKIN DEL CERDITO SEGÚN META
@@ -553,7 +608,7 @@ gameOver(){
         this.player.destroy();
 
         this.player = this.physics.add.image(x, y, "pig" + meta);
-        this.player.setScale(0.4);
+        this.player.setScale(0.5);
         this.player.body.allowGravity = false;
 
         this.player.setBodySize(this.player.width * 0.6, this.player.height * 0.6);

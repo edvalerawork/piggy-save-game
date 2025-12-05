@@ -43,6 +43,14 @@ class PreloadScene extends Phaser.Scene {
             font: "32px Arial",
             fill: "#ffffff"
         }).setOrigin(0.5);
+
+        //MUSICA
+        this.load.audio("music1", "assets/audio/music1.mp3");
+        this.load.audio("music2", "assets/audio/music2.mp3");
+        this.load.audio("music3", "assets/audio/music3.mp3");
+        this.load.audio("music4", "assets/audio/music4.mp3");
+        this.load.audio("music5", "assets/audio/music5.mp3");
+
     }
 
     create() {

@@ -12,15 +12,15 @@ class MenuScene extends Phaser.Scene {
         this.bg.setDepth(-1000);
 
         // TÍTULO
-        this.add.text(width/2, height/2 - 270, "Piggy", {
-            font: "40px Arial",
+        this.add.text(width/2, height/2 - 380, "Piggy", {
+            font: "80px Arial",
             fill: "#ffffff",
             stroke: "#b92978ff",
             strokeThickness: 6
         }).setOrigin(0.5);
 
-        this.add.text(width/2, height/2 - 222, "Save Money", {
-            font: "40px Arial",
+        this.add.text(width/2, height/2 - 280, "Save Money", {
+            font: "70px Arial",
             fill: "#ffffff",
             stroke: "#29b960ff",
             strokeThickness: 6
@@ -28,12 +28,12 @@ class MenuScene extends Phaser.Scene {
 
 
         // BOTÓN
-        const btn = this.add.rectangle(width/2, height/2 -130, 200, 60, 0x629D92)
+        const btn = this.add.rectangle(width/2, height/2 -130, 340, 140, 0x629D92)
             .setInteractive()
             .setStrokeStyle(4, 0xffffff);
 
         this.add.text(width/2, height/2 + -130, "INICIAR", {
-            font: "30px Arial",
+            font: "80px Arial",
             fill: "#ffffff",
             stroke: "#000",
             strokeThickness: 3
