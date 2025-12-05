@@ -39,9 +39,11 @@ class PreloadScene extends Phaser.Scene {
         this.load.image("hammer","assets/hammer.png");
 
         // LOADING
-        this.loadingText = this.add.text(400, 300, "Cargando...", {
-            font: "32px Arial",
-            fill: "#ffffff"
+        this.loadingText = this.add.text(370, 600, "Cargando...", {
+            font: "55px Arial",
+            fill: "#ffffff",
+            stroke: "#084e4bff",
+            strokeThickness: 6
         }).setOrigin(0.5);
 
         //MUSICA

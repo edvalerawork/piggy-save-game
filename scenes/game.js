@@ -106,7 +106,7 @@ class GameScene extends Phaser.Scene {
         this.uiBarTop = this.add.rectangle(width/2, 20, width, 40, 0x000000, 1).setDepth(1000);
 
         // Botón MENÚ
-    this.add.text(20, 20, "Menú", { font: "20px Arial", fill: "#fff" })
+    this.add.text(20, 20, "Menú", { font: "35px Arial", fill: "#fff" })
         .setOrigin(0, 0.5)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => this.scene.start("MenuScene"))
@@ -114,7 +114,7 @@ class GameScene extends Phaser.Scene {
 
     // --- BOTÓN REINICIAR ↺ ---
     this.restartBtn = this.add.text(width - 90, 20, "↺", {
-        font: "30px Arial",
+        font: "40px Arial",
         fill: "#fff"
     })
     .setOrigin(0.5)
@@ -134,7 +134,7 @@ class GameScene extends Phaser.Scene {
     });
 
     this.pauseBtn = this.add.text(width - 25, 20, "⏸", {
-        font: "32px Arial",
+        font: "40px Arial",
         fill: "#fff"
     })
     .setOrigin(0.5)
